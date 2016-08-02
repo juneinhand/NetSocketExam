@@ -2,10 +2,10 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.hand</groupId>
-  <artifactId>Exam3</artifactId>
+  <artifactId>exam3</artifactId>
   <packaging>jar</packaging>
   <version>1.0-SNAPSHOT</version>
-  <name>Exam3</name>
+  <name>exam3</name>
   <url>http://maven.apache.org</url>
   <dependencies>
     <dependency>
@@ -14,12 +14,31 @@
       <version>3.8.1</version>
       <scope>test</scope>
     </dependency>
+    	 <dependency>
+	      <groupId>com.google.code.gson</groupId>
+	      <artifactId>gson</artifactId>
+	      <version>2.2.4</version>
+    </dependency>
   </dependencies>
-  <properties>  
-   
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>  
-        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>  
-         
-        <maven.compiler.encoding>UTF-8</maven.compiler.encoding>  
+  	<properties>  
+	   
+	        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>  
+	        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>  
+	         
+	        <maven.compiler.encoding>UTF-8</maven.compiler.encoding>  
     </properties> 
+    	<build>
+			<plugins>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-complier-plugin</artifactId>
+					<version>3.1</version>
+					<configuration>
+						<source>1.7</source>
+						<targer>1.7</targer>
+					</configuration>
+				</plugin>
+	
+			</plugins>
+</build>
 </project>

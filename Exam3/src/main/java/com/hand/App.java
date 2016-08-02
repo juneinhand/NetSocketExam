@@ -1,11 +1,16 @@
 package com.hand;
 
-
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -17,44 +22,54 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.util.EntityUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import com.google.gson.JsonObject;
 
+/**
+ * Hello world!
+ * 
+ */
 public class App {
 	public static void main(String[] args) {
-		new GetThread().run();
-		
-		
-		JsonObject object = new JsonObject();
-		
-		object.addProperty("name", "汉得信息");
-		object.addProperty("open",13.910 );
-		object.addProperty("close", 14.550);
-		object.addProperty("current", 13.500);
-		object.addProperty("high", 14.040);
-		object.addProperty("low", 13.270);
-		object.addProperty("date", "2016-08-01,15:05:03,00");
-		
-		File f = new File("hand-china.json");
-		//创建XML文件
-		File file = new File("hand-china.XML");
-		//创建XML文件
 		try {
-			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+
+			URL url = new URL("http://hq.sinajs.cn/list=sz300170");
+			URLConnection connection = url.openConnection();// 建立url连接
+			InputStream is = connection.getInputStream();
+			InputStreamReader isr = new InputStreamReader(is, "GBK");// 如果乱码，可以在此设置编码集
+			BufferedReader br = new BufferedReader(isr);
+
+			String line;
+			StringBuilder builder = new StringBuilder();
+			while ((line = br.readLine()) != null) {
+				builder.append(line);
+			}
+			System.out.println(builder);
+			br.close();
+			isr.close();
+			is.close();
+
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		// 创建XML文件
+		File file = new File("hand.XML");
+		// 创建XML文件
+		try {
+			DocumentBuilderFactory factory = DocumentBuilderFactory
+					.newInstance();
 			DocumentBuilder builder = factory.newDocumentBuilder();
 			Document document = builder.newDocument();
-			
-			Element name = document.createElement("name");
-			name.setTextContent("汉得信息");
+
+			Element name = document.createElement("stock");
+			Element name11 = document.createElement("name");
+			name11.setTextContent("汉得信息");
 			Element name1 = document.createElement("open");
 			name1.setTextContent("13.910");
 			Element name2 = document.createElement("close");
@@ -67,21 +82,24 @@ public class App {
 			name5.setTextContent("13.270");
 			Element name6 = document.createElement("date");
 			name6.setTextContent("2016-08-01,15:05:03,00");
+			name.appendChild(name11);
 			name.appendChild(name1);
 			name.appendChild(name2);
 			name.appendChild(name3);
 			name.appendChild(name4);
 			name.appendChild(name5);
 			name.appendChild(name6);
-			
+
 			document.appendChild(name);
-			
-			//------------------
-			TransformerFactory transfomerFactory = TransformerFactory.newInstance();
+
+			// ------------------
+			TransformerFactory transfomerFactory = TransformerFactory
+					.newInstance();
 			Transformer transfomer = transfomerFactory.newTransformer();
-			
-			transfomer.transform(new DOMSource(document),new StreamResult(new File("hand-china.xml")) );
-			
+
+			transfomer.transform(new DOMSource(document), new StreamResult(
+					new File("hand.xml")));
+
 		} catch (ParserConfigurationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -92,10 +110,20 @@ public class App {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-	
-		//---
-		
+
+		// 获取json对象
+		JsonObject object = new JsonObject();
+		// 创建字符串键值
+		object.addProperty("name", "汉得信息");
+		object.addProperty("open", 13.910);
+		object.addProperty("close", 14.550);
+		object.addProperty("current", 13.500);
+		object.addProperty("high", 14.040);
+		object.addProperty("low", 13.270);
+		object.addProperty("date", "2016-08-01,15:05:03,00");
+		// 创建json文件
+		File f = new File("hand.json");
+
 		try {
 			FileOutputStream fos = new FileOutputStream(f);
 			PrintWriter bos = new PrintWriter(fos);
@@ -103,41 +131,13 @@ public class App {
 			bos.write(s);
 			bos.flush();
 			fos.close();
-			
-			
+
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	}
-	
-	 
-}
 
-
-class GetThread extends Thread{
-	
-	HttpClient client = HttpClients.createDefault();
-	
-	
-	public void run(){
-		HttpGet get = new HttpGet("http://hq.sinajs.cn/list=sz300170");
-		try {
-			
-			HttpResponse response =  client.execute(get);
-			HttpEntity entity = response.getEntity();
-			String result = EntityUtils.toString(entity, "UTF-8");
-			
-			System.out.println(result);
-			
-		} catch (ClientProtocolException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 	}
 }
